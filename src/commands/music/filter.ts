@@ -22,6 +22,8 @@ export const filterCommand: Command = {
           { name: "Bass Boost", value: "bassboost" },
           { name: "Nightcore", value: "nightcore" },
           { name: "Vaporwave", value: "vaporwave" },
+          { name: "Slowed + Reverb", value: "slowedreverb" },
+          { name: "Vocal Boost", value: "vocalboost" },
           { name: "Karaoke", value: "karaoke" },
           { name: "3D Rotation", value: "3d" },
           { name: "Tremolo", value: "tremolo" },
@@ -64,6 +66,22 @@ export const filterCommand: Command = {
         await ctx.player.setFilters();
         await ctx.reply({
           embeds: [successEmbed("FILTER APPLIED", "Vaporwave filter enabled.")],
+          components: buildPlayerComponents(ctx.player),
+        });
+        break;
+      case "slowedreverb":
+        ctx.player.filters.setSlowedReverb();
+        await ctx.player.setFilters();
+        await ctx.reply({
+          embeds: [successEmbed("FILTER APPLIED", "Slowed + Reverb filter enabled.")],
+          components: buildPlayerComponents(ctx.player),
+        });
+        break;
+      case "vocalboost":
+        ctx.player.filters.setVoiceIsolation();
+        await ctx.player.setFilters();
+        await ctx.reply({
+          embeds: [successEmbed("FILTER APPLIED", "Vocal Boost filter enabled.")],
           components: buildPlayerComponents(ctx.player),
         });
         break;
@@ -112,7 +130,7 @@ export const filterCommand: Command = {
         await ctx.reply({
           embeds: [
             errorEmbed(
-              "Unknown preset. Available: `clear`, `bassboost`, `nightcore`, `vaporwave`, `karaoke`, `3d`, `tremolo`, `vibrato`, `lowpass`"
+              "Unknown preset. Available: `clear`, `bassboost`, `nightcore`, `vaporwave`, `slowedreverb`, `vocalboost`, `karaoke`, `3d`, `tremolo`, `vibrato`, `lowpass`"
             ),
           ],
         });

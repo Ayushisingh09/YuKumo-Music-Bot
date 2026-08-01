@@ -1,7 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 import { YELLOW_THEME } from "../config/config.js";
-import { formatDuration, createProgressBar } from "./formatters.js";
-import type { TrackData, Player } from "yukumo";
+import { formatDuration } from "./formatters.js";
+import { getProgressBar, type TrackData, type Player } from "yukumo";
 
 export function yellowEmbed(): EmbedBuilder {
   return new EmbedBuilder()
@@ -45,12 +45,14 @@ export function trackEmbed(track: TrackData, player?: Player): EmbedBuilder {
     );
 
   if (player) {
-    const progress = createProgressBar(player.position, track.info.length);
+    const progress = getProgressBar(player.position, track.info.length);
     const time = `${formatDuration(player.position)} / ${formatDuration(track.info.length)}`;
     embed.addFields(
       { name: "Progress", value: `\`${progress}\` (${time})`, inline: false },
       { name: "Volume", value: `${player.volume}%`, inline: true },
       { name: "Repeat Mode", value: player.queue.repeatMode.toUpperCase(), inline: true },
+      { name: "Autoplay", value: player.autoplay ? "ENABLED" : "DISABLED", inline: true },
+      { name: "24/7 Mode", value: player.stayInVc ? "ENABLED" : "DISABLED", inline: true },
       { name: "Status", value: player.paused ? "PAUSED" : "PLAYING", inline: true }
     );
   }

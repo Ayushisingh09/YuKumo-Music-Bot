@@ -25,6 +25,11 @@ import { playersCommand } from "./music/players.js";
 import { leaveCommand } from "./music/leave.js";
 import { joinCommand } from "./music/join.js";
 import { helpCommand } from "./music/help.js";
+import { autoplayCommand } from "./music/autoplay.js";
+import { stayCommand } from "./music/stay.js";
+import { lyricsCommand } from "./music/lyrics.js";
+import { swapCommand } from "./music/swap.js";
+import { skiptoCommand } from "./music/skipto.js";
 
 export const commands = new Collection<string, Command>();
 export const commandAliases = new Map<string, string>();
@@ -55,6 +60,11 @@ const commandList: Command[] = [
   leaveCommand,
   joinCommand,
   helpCommand,
+  autoplayCommand,
+  stayCommand,
+  lyricsCommand,
+  swapCommand,
+  skiptoCommand,
 ];
 
 for (const cmd of commandList) {
