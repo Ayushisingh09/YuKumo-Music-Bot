@@ -8,7 +8,6 @@ export const removeCommand: Command = {
   description: "Remove a track from queue by position number",
   requiresVoice: true,
   requiresPlayer: true,
-  options: [{ name: "position", type: "integer", required: true }],
   slashData: new SlashCommandBuilder()
     .setName("remove")
     .setDescription("Remove a track from queue by position number")
@@ -17,8 +16,8 @@ export const removeCommand: Command = {
     ),
   execute: async (ctx: CommandContext) => {
     if (!ctx.player) return;
-    const pos = ctx.opts.getInteger("position");
-    if (pos === null || pos < 1 || pos > ctx.player.queue.size) {
+    const pos = Number(ctx.args[0]);
+    if (isNaN(pos) || pos < 1 || pos > ctx.player.queue.size) {
       await ctx.reply({
         embeds: [errorEmbed(`Invalid position. Provide a number between 1 and ${ctx.player.queue.size}.`)],
       });
@@ -31,7 +30,7 @@ export const removeCommand: Command = {
     await ctx.reply({
       embeds: [
         removedTrack
-          ? successEmbed("Track removed", `Removed **${removedTrack.info.title}** from position ${pos}.`)
+          ? successEmbed("TRACK REMOVED", `Removed track **${removedTrack.info.title}** at position ${pos}`)
           : errorEmbed("Failed to remove track from queue."),
       ],
       components: buildPlayerComponents(ctx.player),

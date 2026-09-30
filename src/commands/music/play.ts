@@ -1,19 +1,13 @@
 import { SlashCommandBuilder } from "discord.js";
 import type { Command, CommandContext } from "../types.js";
-import { errorEmbed, successEmbed, trackEmbed, addedEmbed } from "../../utils/embeds.js";
+import { errorEmbed, successEmbed, trackEmbed } from "../../utils/embeds.js";
 import { buildPlayerComponents } from "../../components/playerComponents.js";
-import type { SearchResult, TrackData } from "yukumo";
-
-const ENGINES = ["ytsearch", "ytmsearch", "scsearch"];
+import type { SearchResult } from "yukumo";
 
 export const playCommand: Command = {
   name: "play",
   description: "Search and play a track or playlist",
   requiresVoice: true,
-  options: [
-    { name: "engine", type: "string", required: false, choices: ENGINES },
-    { name: "query", type: "string", required: true, rest: true },
-  ],
   slashData: new SlashCommandBuilder()
     .setName("play")
     .setDescription("Search and play a track or playlist")
@@ -32,8 +26,13 @@ export const playCommand: Command = {
         )
     ),
   execute: async (ctx: CommandContext) => {
-    const engine = ctx.opts.getString("engine") ?? undefined;
-    const query = ctx.opts.getString("query");
+    let engine = "";
+    let query = ctx.args.join(" ");
+
+    if (ctx.args.length > 1 && ["ytsearch", "ytmsearch", "scsearch"].includes(ctx.args[0])) {
+      engine = ctx.args[0];
+      query = ctx.args.slice(1).join(" ");
+    }
 
     if (!query) {
       await ctx.reply({ embeds: [errorEmbed("Please provide a search query or URL.")] });
@@ -49,7 +48,7 @@ export const playCommand: Command = {
       });
     }
 
-    const searchResult: SearchResult = await player.search(query, engine);
+    const searchResult: SearchResult = await player.search(query, engine || undefined);
 
     if (
       searchResult.loadType === "empty" ||
@@ -61,15 +60,6 @@ export const playCommand: Command = {
       return;
     }
 
-    // Attribute every queued track to the requester for display in embeds.
-    const stamp = (track: TrackData) => {
-      (track as { userData?: Record<string, unknown> }).userData = {
-        ...((track as { userData?: Record<string, unknown> }).userData ?? {}),
-        requester: ctx.user.id,
-      };
-    };
-    searchResult.tracks.forEach(stamp);
-
     if (searchResult.loadType === "playlist" && searchResult.playlistInfo) {
       for (const track of searchResult.tracks) {
         player.queue.enqueue(track);
@@ -80,8 +70,8 @@ export const playCommand: Command = {
       await ctx.reply({
         embeds: [
           successEmbed(
-            "Playlist added",
-            `Queued **${searchResult.tracks.length}** tracks from **${searchResult.playlistInfo.name}**.`
+            "PLAYLIST ADDED",
+            `Added **${searchResult.tracks.length}** tracks from **${searchResult.playlistInfo.name}** to the queue.`
           ),
         ],
         components: buildPlayerComponents(player),
@@ -92,7 +82,12 @@ export const playCommand: Command = {
 
       if (player.queue.size > 1 || player.status === "playing") {
         await ctx.reply({
-          embeds: [addedEmbed(track, player.queue.size)],
+          embeds: [
+            successEmbed(
+              "ADDED TO QUEUE",
+              `Added **[${track.info.title}](${track.info.uri ?? "#"})** by **${track.info.author}**`
+            ),
+          ],
           components: buildPlayerComponents(player),
         });
       } else {

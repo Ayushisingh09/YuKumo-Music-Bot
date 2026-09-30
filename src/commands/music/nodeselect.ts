@@ -11,14 +11,6 @@ import {
 export const nodeselectCommand: Command = {
   name: "nodeselect",
   description: "Switch wrapper node selection strategy algorithm",
-  options: [
-    {
-      name: "strategy",
-      type: "string",
-      required: true,
-      choices: ["least-used", "least-penalty", "round-robin", "random"],
-    },
-  ],
   slashData: new SlashCommandBuilder()
     .setName("nodeselect")
     .setDescription("Switch wrapper node selection strategy algorithm")
@@ -35,7 +27,7 @@ export const nodeselectCommand: Command = {
         )
     ),
   execute: async (ctx: CommandContext) => {
-    const strategy = ctx.opts.getString("strategy")?.toLowerCase();
+    const strategy = ctx.args[0]?.toLowerCase();
     switch (strategy) {
       case "least-used":
         ctx.yukumo.nodes.setSelector(new LeastUsedSelector());

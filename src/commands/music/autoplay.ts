@@ -7,7 +7,6 @@ export const autoplayCommand: Command = {
   description: "Toggle smart autoplay track recommendation",
   requiresVoice: true,
   requiresPlayer: true,
-  options: [{ name: "enable", type: "boolean", required: false }],
   slashData: new SlashCommandBuilder()
     .setName("autoplay")
     .setDescription("Toggle smart autoplay recommendation when queue ends")
@@ -20,12 +19,12 @@ export const autoplayCommand: Command = {
       await ctx.reply({ embeds: [errorEmbed("No active player found.")] });
       return;
     }
-    const enableOpt = ctx.opts.getBoolean("enable");
+    const enableOpt = ctx.interaction ? ctx.interaction.options.getBoolean("enable") : null;
     const newState = enableOpt !== null ? enableOpt : !player.autoplay;
     player.setAutoplay(newState);
 
     await ctx.reply({
-      embeds: [successEmbed("Autoplay", `Autoplay is now **${newState ? "on" : "off"}**.`)],
+      embeds: [successEmbed("Autoplay Settings", `Autoplay has been ${newState ? "ENABLED" : "DISABLED"}.`)],
     });
   },
 };

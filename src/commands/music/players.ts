@@ -19,9 +19,9 @@ export const playersCommand: Command = {
       .join("\n");
 
     const embed = yellowEmbed()
-      .setAuthor({ name: "Active Players" })
+      .setTitle("[ACTIVE WRAPPER PLAYERS]")
       .setDescription(details || "No active players across any server.")
-      .setFooter({ text: `Total active players: ${allPlayers.length}` });
+      .setFooter({ text: `Total Active Players: ${allPlayers.length}` });
 
     await ctx.reply({ embeds: [embed] });
   },

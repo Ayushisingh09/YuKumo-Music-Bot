@@ -9,7 +9,6 @@ export const pitchCommand: Command = {
   description: "Set timescale audio pitch multiplier (e.g. 1.2)",
   requiresVoice: true,
   requiresPlayer: true,
-  options: [{ name: "value", type: "number", required: true }],
   slashData: new SlashCommandBuilder()
     .setName("pitch")
     .setDescription("Set timescale audio pitch multiplier (e.g. 1.2)")
@@ -18,15 +17,15 @@ export const pitchCommand: Command = {
     ),
   execute: async (ctx: CommandContext) => {
     if (!ctx.player) return;
-    const pitchVal = ctx.opts.getNumber("value");
-    if (pitchVal === null || pitchVal < 0.5 || pitchVal > 3.0) {
+    const pitchVal = Number(ctx.args[0]);
+    if (isNaN(pitchVal) || pitchVal < 0.5 || pitchVal > 3.0) {
       await ctx.reply({ embeds: [errorEmbed("Pitch multiplier must be between 0.5 and 3.0.")] });
       return;
     }
     ctx.player.filters.add(new TimescaleFilter({ pitch: pitchVal }));
     await ctx.player.setFilters();
     await ctx.reply({
-      embeds: [successEmbed("Pitch updated", `Audio pitch set to **${pitchVal}x**.`)],
+      embeds: [successEmbed("PITCH UPDATED", `Audio pitch set to **${pitchVal}x**`)],
       components: buildPlayerComponents(ctx.player),
     });
   },
